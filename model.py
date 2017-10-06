@@ -30,17 +30,17 @@ image_input = Input(shape=(img_width, img_height, num_channels))
 encoded_image = vision_model(image_input)
 
 #Next lets define a language model to encode the question into a vector
-#Each question will be at most 100 words long
+#Each track name will be at most 20 words long
 #and we will index words as integers from 1 to 9999
-question_input = Input(shape=(2,), dtype='int32') #was 1000
-embedded_question = Embedding(input_dim=10000, output_dim=256, input_length=2)(question_input)
+question_input = Input(shape=(20,), dtype='int32') #was 1000
+embedded_question = Embedding(input_dim=10000, output_dim=256, input_length=20)(question_input)
 encoded_question = LSTM(256)(embedded_question)
 
 #Lets concatonate the question vector and the image vector
 merged = keras.layers.concatenate([encoded_question, encoded_image])
 
 #Lets train a logistic regression over 1000 words on top
-output = Dense(2, activation='softmax')(merged) #was 1000
+output = Dense(1000, activation='softmax')(merged) #was 1000
 
 #This is our final model
 vqa_model = Model(inputs=[image_input, question_input], outputs=output)
@@ -58,3 +58,4 @@ x2 = np.array([[1, 2]])
 y = np.array([[1, 1]])
 
 vqa_model.fit([x,x2], y)
+
